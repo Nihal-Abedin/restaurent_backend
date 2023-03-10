@@ -36,7 +36,8 @@ const UserSchema = new mongoose.Schema({
   },
 });
 
-// before signup
+// Document Middleware
+
 UserSchema.pre("save", async function (next) {
   if (this.password.length < 5) {
     return next(new AppError("password least contain 5 characters", 400));
@@ -46,7 +47,7 @@ UserSchema.pre("save", async function (next) {
   next();
 });
 
-// document middleware
+// Schema methods
 
 UserSchema.methods.correctPassword = function (hasedPassword, curPass) {
   return bcrypt.compare(curPass, hasedPassword);
