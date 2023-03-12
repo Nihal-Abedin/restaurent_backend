@@ -6,6 +6,7 @@ const {
   getAllReview,
   getSingleReview,
   deleteReview,
+  updateReview,
 } = require("../controllers/reviewController");
 const {
   authMiddleware,
@@ -17,5 +18,9 @@ router
   .route("/")
   .post(authMiddleware, restrictUser("user"), setMenuUserId, createReview)
   .get(getAllReview);
-router.route("/:revId").get(getSingleReview).delete(deleteReview);
+router
+  .route("/:revId")
+  .get(getSingleReview)
+  .patch(updateReview)
+  .delete(deleteReview);
 module.exports = router;

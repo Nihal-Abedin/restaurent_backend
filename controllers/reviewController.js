@@ -49,8 +49,28 @@ exports.getSingleReview = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.updateReview = catchAsync(async (req, res, next) => {
+  const { revId } = req.params;
+  console.log(req.body);
+  const review = await Review.findByIdAndUpdate(revId, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  if (!review) {
+    return next(new AppError("There is no review with this Id", 400));
+  }
+  res.status(200).json({
+    status: 200,
+    message: "Success",
+    data: {
+      review,
+    },
+  });
+});
+
 exports.deleteReview = catchAsync(async (req, res, next) => {
   const { revId } = req.params;
+  console.log(revId);
   await Review.findByIdAndDelete(revId);
 
   res.status(200).json({
