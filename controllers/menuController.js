@@ -33,16 +33,35 @@ exports.getAllMenu = catchAsync(async (req, res, next) => {
 exports.getSingleMenu = catchAsync(async (req, res, next) => {
   const { menuId } = req.params;
 
-  const menu = await Menu.findById(menuId).populate({
-    path: "restaurant",
-    select: "name",
-  });
+  const menu = await Menu.findById(menuId).populate("reviews");
 
   if (!menu) {
     return next(new AppError("No Menu with this ID", 400));
   }
   res.status(200).json({
     staus: 200,
+    message: "Success",
+    data: {
+      menu,
+    },
+  });
+});
+
+exports.updateMenu = catchAsync(async (req, res, next) => {
+  const { resId, menuId } = req.params;
+
+  const menu = await Menu.findByIdAndUpdate(
+    menuId,
+    {
+      ...req.body,
+      restaurant: resId,
+    },
+    {
+      new: true,
+    }
+  );
+  res.status(200).json({
+    status: 200,
     message: "Success",
     data: {
       menu,
