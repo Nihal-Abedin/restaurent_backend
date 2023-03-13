@@ -31,10 +31,7 @@ exports.getAllReview = catchAsync(async (req, res, next) => {
 
 exports.getSingleReview = catchAsync(async (req, res, next) => {
   const { revId } = req.params;
-  const review = await Review.findById(revId).populate({
-    path: "user",
-    select: "name ",
-  });
+  const review = await Review.findById(revId);
   if (!review) {
     return next(new AppError("There is no review with this Id", 400));
   }

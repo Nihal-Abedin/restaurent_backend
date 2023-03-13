@@ -16,7 +16,10 @@ const router = express.Router({
 });
 router.use("/:menuId/reviews", reviewRoutes);
 
-router.route("/").post(authMiddleware, setResId, createMenu).get(getAllMenu);
+router
+  .route("/")
+  .post(authMiddleware, restrictUser("admin"), setResId, createMenu)
+  .get(getAllMenu);
 
 router.route("/:menuId").get(getSingleMenu).patch(updateMenu);
 

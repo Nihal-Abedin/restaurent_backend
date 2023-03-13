@@ -20,16 +20,16 @@ const reviewSchema = new mongoose.Schema({
     ref: "menu",
   },
 });
-// reviewSchema.pre(/^find/, function (next) {
-//   this.populate({
-//     path: "user",
-//     select: "name ",
-//   });
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "user",
+    select: "name ",
+  });
 
-//   next();
-// });
+  next();
+});
 // statics
-reviewSchema.statics.calcAvgRatings = async function (menuId) {
+reviewSchema.statics.calcAvgRatingsForMenu = async function (menuId) {
   const stats = await this.aggregate([
     {
       $match: { menu: menuId },
@@ -59,7 +59,7 @@ reviewSchema.statics.calcAvgRatings = async function (menuId) {
 // Document Middleware
 
 reviewSchema.post("save", function () {
-  this.constructor.calcAvgRatings(this.menu);
+  this.constructor.calcAvgRatingsForMenu(this.menu);
 });
 // Query Middleware
 reviewSchema.pre(/^findOneAnd/, async function (next) {
@@ -68,7 +68,7 @@ reviewSchema.pre(/^findOneAnd/, async function (next) {
   next();
 });
 reviewSchema.post(/^findOneAnd/, async function () {
-  await this.query.constructor.calcAvgRatings(this.query.menu);
+  await this.query.constructor.calcAvgRatingsForMenu(this.query.menu);
 });
 
 const reviewModel = mongoose.model("Review", reviewSchema);
