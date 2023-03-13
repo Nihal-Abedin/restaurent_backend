@@ -20,14 +20,14 @@ const reviewSchema = new mongoose.Schema({
     ref: "menu",
   },
 });
-reviewSchema.pre(/^find/, function (next) {
-  this.populate({
-    path: "user",
-    select: "name ",
-  });
+// reviewSchema.pre(/^find/, function (next) {
+//   this.populate({
+//     path: "user",
+//     select: "name ",
+//   });
 
-  next();
-});
+//   next();
+// });
 // statics
 reviewSchema.statics.calcAvgRatings = async function (menuId) {
   const stats = await this.aggregate([
@@ -42,7 +42,7 @@ reviewSchema.statics.calcAvgRatings = async function (menuId) {
       },
     },
   ]);
-  console.log(stats);
+  // console.log(stats);
   if (stats.length > 0) {
     await Menu.findByIdAndUpdate(menuId, {
       totalReviews: stats[0].nRating,
@@ -63,8 +63,8 @@ reviewSchema.post("save", function () {
 });
 // Query Middleware
 reviewSchema.pre(/^findOneAnd/, async function (next) {
-  this.query = await this.findOne();
-  console.log(this.query, "gg");
+  this.query = await this.model.findOne(this.getQuery());
+  // this.model.findOne(this.getQuery());
   next();
 });
 reviewSchema.post(/^findOneAnd/, async function () {

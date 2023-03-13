@@ -12,11 +12,7 @@ exports.setMenuUserId = (req, res, next) => {
 };
 
 exports.createReview = catchAsync(async (req, res, next) => {
-  const review = await Review.create({
-    ...req.body,
-    user: req.user.id,
-    menu: req.params.menuId,
-  });
+  const review = await Review.create(req.body);
   res.status(201).json({
     status: 201,
     message: "Success!",
@@ -35,7 +31,10 @@ exports.getAllReview = catchAsync(async (req, res, next) => {
 
 exports.getSingleReview = catchAsync(async (req, res, next) => {
   const { revId } = req.params;
-  const review = await Review.findById(revId);
+  const review = await Review.findById(revId).populate({
+    path: "user",
+    select: "name ",
+  });
   if (!review) {
     return next(new AppError("There is no review with this Id", 400));
   }
@@ -70,8 +69,10 @@ exports.updateReview = catchAsync(async (req, res, next) => {
 
 exports.deleteReview = catchAsync(async (req, res, next) => {
   const { revId } = req.params;
-  console.log(revId);
-  await Review.findByIdAndDelete(revId);
+  const doc = await Review.findByIdAndDelete(revId);
+  if (!doc) {
+    return next(new AppError("No Review found with that ID", 404));
+  }
 
   res.status(200).json({
     message: "Suceccfully deleted!",
